@@ -28,5 +28,4 @@ RUN git clone $GIT && \
     rm -rf nfdump && \
     apk del build-deps
 
-CMD ["nfcapd"
-]
+CMD ["nfcapd"]
