@@ -10,7 +10,7 @@ RUN apk add --no-cache libtool bzip2-dev libpcap-dev \
     git autoconf automake m4 pkgconfig make g++ flex byacc
 
 RUN git clone $GIT && \
-    cd nfdump && \
+    pushd nfdump && \
     git checkout $HASH && \
     ./autogen.sh && \
     ./configure \
@@ -25,6 +25,7 @@ RUN git clone $GIT && \
       --enable-nfpcapd && \
     make -j"$(nproc)" && \
     make install-strip && \
+    popd && \
     rm -rf nfdump && \
     apk del build-deps
 
