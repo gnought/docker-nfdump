@@ -33,6 +33,6 @@ jobs:
           push: ${{ github.event_name != 'pull_request' }}
           tags: gnought/docker-nfdump:latest
           labels: |
-            org.label-schema.schema-version="1.0"
+            org.label-schema.schema-version=1.0
             org.label-schema.vcs-ref=${{ steps.latest_tag.outputs.latest_tag }}
             org.label-schema.vcs-url=${{ env.REPO }}
