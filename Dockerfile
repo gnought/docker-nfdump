@@ -4,7 +4,7 @@ FROM alpine
 ARG GIT
 ARG HASH
 
-RUN apk add --no-cache libtool bzip2-dev libpcap-dev \
+RUN apk add --no-cache lddtree libtool bzip2-dev libpcap-dev \
     zlib-dev rrdtool-dev curl-dev && \
     apk add --no-cache --virtual build-deps \
     git autoconf automake m4 pkgconfig make g++ flex byacc
@@ -30,11 +30,10 @@ RUN git clone $GIT && \
     rm -rf nfdump && \
     apk del build-deps
 
-RUN wget -O /lddtree.sh https://raw.githubusercontent.com/ncopa/lddtree/master/lddtree.sh && \
-    mkdir -p /vroot && \
+RUN mkdir -p /vroot && \
     find /tmp/usr/bin -type f -exec sh -c ' \
       cp $1 /vroot/$(basename $1); \
-      sh /lddtree.sh -l $1 | grep -v $1 | xargs -I % sh -c '"'mkdir -p \$(dirname /vroot%); cp % /vroot%;'"' \
+      lddtree -l $1 | grep -v $1 | xargs -I % sh -c '"'mkdir -p \$(dirname /vroot%); cp % /vroot%;'"' \
     ' sh {} \;
 
 FROM scratch
