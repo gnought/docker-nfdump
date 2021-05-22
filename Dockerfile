@@ -30,14 +30,14 @@ RUN git clone $GIT && \
     rm -rf nfdump && \
     apk del build-deps
 
-RUN mkdir -p /vroot && \
+RUN mkdir -p /nfdump && \
     find /tmp/usr/bin -type f -exec sh -c ' \
-      cp $1 /vroot/$(basename $1); \
-      lddtree -l $1 | grep -v $1 | xargs -I % sh -c '"'mkdir -p \$(dirname /vroot%); cp % /vroot%;'"' \
+      cp $1 /nfdump/$(basename $1); \
+      lddtree -l $1 | grep -v $1 | xargs -I % sh -c '"'mkdir -p \$(dirname /nfdump%); cp % /nfdump%;'"' \
     ' sh {} \;
 
 FROM scratch
 WORKDIR /
 ENV PATH=/
-COPY --from=0 /vroot /
+COPY --from=0 /nfdump /
 CMD ["nfcapd", "-V"]
