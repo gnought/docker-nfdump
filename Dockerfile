@@ -14,7 +14,8 @@ RUN git clone $GIT && \
     git checkout $HASH && \
     ./autogen.sh && \
     ./configure \
-      --enable-shared \
+      --prefix=/usr \
+      --disable-shared \
       --enable-nsel \
       --disable-jnat \
       --disable-nfprofile \
@@ -24,9 +25,20 @@ RUN git clone $GIT && \
       --enable-readpcap \
       --enable-nfpcapd && \
     make -j"$(nproc)" && \
-    make install-strip && \
+    DESTDIR=/tmp make install-strip && \
     cd .. && \
     rm -rf nfdump && \
     apk del build-deps
 
+RUN wget -O /lddtree.sh https://raw.githubusercontent.com/ncopa/lddtree/master/lddtree.sh && \
+    mkdir -p /vroot && \
+    find /tmp/usr/bin -type f -exec sh -c ' \
+      cp $1 /vroot/$(basename $1); \
+      sh /lddtree.sh -l $1 | grep -v $1 | xargs -I % sh -c '"'mkdir -p \$(dirname /vroot%); cp % /vroot%;'"' \
+    ' sh {} \;
+
+FROM scratch
+WORKDIR /
+ENV PATH=/
+COPY --from=0 /vroot /
 CMD ["nfcapd", "-V"]
