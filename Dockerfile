@@ -11,7 +11,7 @@ RUN apk add --no-cache lddtree libtool bzip2-dev libpcap-dev \
 
 RUN git clone $GIT && \
     cd nfdump && \
-    git checkout $HASH && \
+    git checkout ${HASH:-HEAD} && \
     ./autogen.sh && \
     ./configure \
       --prefix=/usr \
@@ -31,13 +31,14 @@ RUN git clone $GIT && \
     apk del build-deps
 
 RUN mkdir -p /nfdump && \
+    mkdir -p /nfdump/usr/bin && \
     find /tmp/usr/bin -type f -exec sh -c ' \
-      cp $1 /nfdump/$(basename $1); \
+      cp $1 /nfdump/usr/bin/$(basename $1); \
       lddtree -l $1 | grep -v $1 | xargs -I % sh -c '"'mkdir -p \$(dirname /nfdump%); cp % /nfdump%;'"' \
     ' sh {} \;
 
 FROM scratch
 WORKDIR /
-ENV PATH=/
-COPY --from=0 /nfdump /
+ENV PATH=/usr/bin
+COPY --from=0 nfdump /
 CMD ["nfcapd", "-V"]
