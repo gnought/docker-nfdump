@@ -4,6 +4,8 @@ FROM alpine
 ARG GIT
 ARG HASH
 
+WORKDIR /
+
 RUN apk add --no-cache lddtree libtool bzip2-dev libpcap-dev \
     zlib-dev rrdtool-dev curl-dev && \
     apk add --no-cache --virtual build-deps \
@@ -25,7 +27,9 @@ RUN git clone $GIT && \
       --enable-readpcap \
       --enable-nfpcapd && \
     make -j"$(nproc)" && \
+    cd bin && make nfreader && cd .. && \
     DESTDIR=/tmp make install-strip && \
+    cp bin/nfreader /tmp/usr/bin/ && \
     cd .. && \
     rm -rf nfdump && \
     apk del build-deps
