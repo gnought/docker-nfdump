@@ -21,8 +21,8 @@ jobs:
           VER=$(git describe --tags)
           REF=$(git rev-parse --short HEAD)
           echo "::set-output name=ver::${VER}"
-          echo "::set-output name=vcs-ref::${REF}"
-          echo "::set-output name=vcs-url::$GITHUB_SERVER_URL/$REPO"
+          echo "::set-output name=rev::${REF}"
+          echo "::set-output name=src::$GITHUB_SERVER_URL/$REPO"
       - name: Set up Docker Buildx
         id: buildx
         uses: docker/setup-buildx-action@v1
@@ -37,10 +37,10 @@ jobs:
           push: ${{ github.event_name != 'pull_request' }}
           tags: gnought/docker-nfdump:latest
           build-args: |
-            GIT=${{ steps.latest_tag.outputs.vcs-url }}
-            HASH=${{ steps.latest_tag.outputs.vcs-ref }}
+            GIT=${{ steps.latest_tag.outputs.src }}
+            HASH=${{ steps.latest_tag.outputs.rev }}
           labels: |
-            org.label-schema.schema-version=1.0
-            org.lable-schema.version=${{ steps.latest_tag.outputs.ver }}
-            org.label-schema.vcs-ref=${{ steps.latest_tag.outputs.vcs-ref }}
-            org.label-schema.vcs-url=${{ steps.latest_tag.outputs.vcs-url }}
+            org.opencontainers.image.authors=gnought
+            org.opencontainers.image.version=${{ steps.latest_tag.outputs.ver }}
+            org.opencontainers.image.revision=${{ steps.latest_tag.outputs.rev }}
+            org.opencontainers.image.source=${{ steps.latest_tag.outputs.src }}
