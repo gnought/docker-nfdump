@@ -7,10 +7,9 @@ ARG HASH
 WORKDIR /
 
 RUN apk add --no-cache lddtree libtool bzip2-dev libpcap-dev \
-    zlib-dev rrdtool-dev curl-dev tzdata && \
+    zlib-dev rrdtool-dev curl-dev tzdata tini-static && \
     apk add --no-cache --virtual build-deps \
-    git autoconf automake m4 pkgconfig make g++ flex byacc \
-    tini-static
+    git autoconf automake m4 pkgconfig make g++ flex byacc
 
 RUN git clone $GIT && \
     cd nfdump && \
