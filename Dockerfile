@@ -46,4 +46,9 @@ WORKDIR /
 ENV PATH=/usr/bin
 COPY --from=0 /usr/share/zoneinfo /usr/share/zoneinfo
 COPY --from=0 nfdump /
+
+STOPSIGNAL SIGQUIT
+STOPSIGNAL SIGTERM
+STOPSIGNAL SIGINT
+
 CMD ["nfcapd", "-V"]
